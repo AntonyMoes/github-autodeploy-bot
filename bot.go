@@ -35,13 +35,15 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 
 		refSlice := strings.Split(*ePush.Ref, "/")
 		branch := refSlice[len(refSlice)-1]
-		//fmt.Printf("Branch: %s", branch)
+		fmt.Printf("Branch: %s\n", branch)
 
 		repoName := *ePush.Repo.FullName
 		repo := config.Repos[repoName]
 
-		//cmd := exec.Command("./update.sh")
+		//cmd := exec.Command("./front_layout_update.sh")
+		fmt.Printf("Cmd: %s\n", repo[branch])
 		cmd := exec.Command(repo[branch])
+		fmt.Printf("Repo: %s\n", branch)
 		cmd.Stdin = strings.NewReader("")
 
 		var out bytes.Buffer
@@ -76,7 +78,7 @@ func main() {
 		log.Fatalf("Unmarshalln't: %v", err)
 	}
 
-	log.Println("server started")
+	log.Printf("server started on port %s\n", config.Port)
 	http.HandleFunc(config.Url, handleWebhook)
 	log.Fatal(http.ListenAndServe(config.Port, nil))
 }
