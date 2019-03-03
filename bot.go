@@ -68,19 +68,19 @@ func main() {
 
 	configFile, err := os.Open("webhooks.json")
 	if err != nil {
-		return
+		log.Fatalf("Did not open: %v", err)
 	}
 	defer configFile.Close()
 
 	configBytes := make([]byte, 50)
 	_, err = configFile.Read(configBytes)
 	if err != nil {
-		return
+		log.Fatalf("Readn't: %v", err)
 	}
 
 	err = config.UnmarshalJSON(configBytes)
 	if err != nil {
-		return
+		log.Fatalf("Unmarshalln't: %v", err)
 	}
 
 	log.Println("server started")
