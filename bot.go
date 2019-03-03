@@ -6,8 +6,13 @@ import (
 	"github.com/google/go-github/github"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
+)
+
+var (
+	config *Config
 )
 
 func handleWebhook(w http.ResponseWriter, r *http.Request) {
@@ -27,11 +32,16 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	switch event.(type) {
 	case *github.PushEvent:
 		ePush := event.(*github.PushEvent)
+
 		refSlice := strings.Split(*ePush.Ref, "/")
 		branch := refSlice[len(refSlice)-1]
-		fmt.Printf("Branch: %s", branch)
+		//fmt.Printf("Branch: %s", branch)
 
-		cmd := exec.Command("./update.sh")
+		repoName := *ePush.Repo.FullName
+		repo := config.Repos[repoName]
+
+		//cmd := exec.Command("./update.sh")
+		cmd := exec.Command(repo[branch])
 		cmd.Stdin = strings.NewReader("")
 
 		var out bytes.Buffer
@@ -54,7 +64,26 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	config = &Config{}
+
+	configFile, err := os.Open("webhooks.json")
+	if err != nil {
+		return
+	}
+	defer configFile.Close()
+
+	configBytes := make([]byte, 50)
+	_, err = configFile.Read(configBytes)
+	if err != nil {
+		return
+	}
+
+	err = config.UnmarshalJSON(configBytes)
+	if err != nil {
+		return
+	}
+
 	log.Println("server started")
-	http.HandleFunc("/webhook", handleWebhook)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	http.HandleFunc(config.Url, handleWebhook)
+	log.Fatal(http.ListenAndServe(config.Port, nil))
 }

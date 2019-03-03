@@ -1,0 +1,16 @@
+{
+  "port": ":8080",
+  "url": "/webhook",
+  "repos":
+  {
+    "frontend-park-mail-ru/2019_1_DeathPacito":
+    {
+      "layout": "./front_layout_update.sh"
+    },
+
+    "go-park-mail-ru/2019_1_DeathPacito":
+    {
+      "dev": "./back_dev_update.sh"
+    }
+  }
+}
