@@ -15,7 +15,7 @@ Go bot based on Github webhookes
   {
     "AntonyMoes/github-autodeploy-bot":
     {
-      "master": "./redeploy_bot.sh"
+      "master": "./examples/redeploy_bot.sh"
     }
   }
 }
