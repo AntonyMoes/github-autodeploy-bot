@@ -3,9 +3,14 @@
   "url": "/webhook",
   "repos":
   {
-    "AntonyMoes/github-autodeploy-bot":
+    "frontend-park-mail-ru/2019_1_DeathPacito":
     {
-      "master": "./examples/redeploy_bot.sh"
+      "layout": "./front_layout_update.sh"
+    },
+
+    "go-park-mail-ru/2019_1_DeathPacito":
+    {
+      "dev": "./back_dev_update.sh"
     }
   }
 }
