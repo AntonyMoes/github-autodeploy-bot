@@ -3,7 +3,8 @@ Go bot based on Github webhookes
 
 - Uses webhookes.json as config file
 - If configured right (using bash scripts) can even deploy new versions itself!
-#webhookes.json example
+
+### webhookes.json example
 
 
 ```json
