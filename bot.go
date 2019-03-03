@@ -33,17 +33,17 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	case *github.PushEvent:
 		ePush := event.(*github.PushEvent)
 
+		repoName := *ePush.Repo.FullName
+		repo := config.Repos[repoName]
+		fmt.Printf("Repo: %s\n", repo)
+
 		refSlice := strings.Split(*ePush.Ref, "/")
 		branch := refSlice[len(refSlice)-1]
 		fmt.Printf("Branch: %s\n", branch)
 
-		repoName := *ePush.Repo.FullName
-		repo := config.Repos[repoName]
-
 		//cmd := exec.Command("./front_layout_update.sh")
 		fmt.Printf("Cmd: %s\n", repo[branch])
 		cmd := exec.Command(repo[branch])
-		fmt.Printf("Repo: %s\n", branch)
 		cmd.Stdin = strings.NewReader("")
 
 		var out bytes.Buffer
