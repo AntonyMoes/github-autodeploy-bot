@@ -2,12 +2,12 @@ package main
 
 import (
 	"bytes"
-	"strings"
 	"fmt"
-	"os/exec"
+	"github.com/google/go-github/github"
 	"log"
 	"net/http"
-	"github.com/google/go-github/github"
+	"os/exec"
+	"strings"
 )
 
 func handleWebhook(w http.ResponseWriter, r *http.Request) {
@@ -18,38 +18,35 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-
 	event, err := github.ParseWebHook(github.WebHookType(r), payload)
 	if err != nil {
 		log.Printf("could not parse webhook: err=%s\n", err)
 		return
 	}
 
-	switch e := event.(type) {
+	switch event.(type) {
 	case *github.PushEvent:
-		// this is a commit push, do something with it
-		fmt.Println("Got a push event")
+		ePush := event.(*github.PushEvent)
+		refSlice := strings.Split(*ePush.Ref, "/")
+		branch := refSlice[len(refSlice)-1]
+		fmt.Printf("Branch: %s", branch)
+
 		cmd := exec.Command("./update.sh")
 		cmd.Stdin = strings.NewReader("")
-		fmt.Println("\nBUILDING READER")
+
 		var out bytes.Buffer
 		cmd.Stdout = &out
-		fmt.Println("BINDING OUTPUT STREAM")
+
 		err := cmd.Run()
-		fmt.Println("COMMAND EXECUTED")
 		if err != nil {
 			log.Fatal(err)
 		}
-	fmt.Printf("Output: %v \n\n",out.String())
+
+		fmt.Printf("Output: %v \n\n", out.String())
+
 	case *github.PullRequestEvent:
 		// this is a pull request, do something with it
-	case *github.WatchEvent:
-		// https://developer.github.com/v3/activity/events/types/#watchevent
-		// someone starred our repository
-		if e.Action != nil && *e.Action == "starred" {
-			fmt.Printf("%s starred repository %s\n",
-				*e.Sender.Login, *e.Repo.FullName)
-		}
+
 	default:
 		log.Printf("unknown event type %s\n", github.WebHookType(r))
 		return
