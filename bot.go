@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/google/go-github/github"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"os/exec"
 	"strings"
 )
@@ -66,14 +66,7 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 func main() {
 	config = &Config{}
 
-	configFile, err := os.Open("webhooks.json")
-	if err != nil {
-		log.Fatalf("Did not open: %v", err)
-	}
-	defer configFile.Close()
-
-	configBytes := make([]byte, 50)
-	_, err = configFile.Read(configBytes)
+	configBytes, err := ioutil.ReadFile("webhooks.json")
 	if err != nil {
 		log.Fatalf("Readn't: %v", err)
 	}
